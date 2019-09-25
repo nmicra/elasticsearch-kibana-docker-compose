@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  elasticsearch:
+    image: artifactory:8080/docker-virtual/elasticsearch:7.3.0
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - discovery.seed_hosts=elasticsearch
+      - cluster.initial_master_nodes=elasticsearch
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - "YOUR_IP:8080:9200"
+  kibana:
+    image: artifactory:8080/docker-virtual/kibana:7.3.0
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_URL: "http://elasticsearch:9200"
+    ports:
+      - "YOUR_IP:80:5601"
+    depends_on:
+      - elasticsearch
+volumes:
+  esdata1:
+    driver: local
